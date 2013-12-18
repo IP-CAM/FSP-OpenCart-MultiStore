@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Home page customization </id>
+    <version>1.0.3</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Tarsem</author>
+    <decription><![CDATA[
+		
+		]]>
+    </decription>
+
+    <file name="catalog/controller/common/home.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$this->data['heading_title'] = $this->config->get('config_title');
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->load->model('catalog/category');
+                                $this->load->model('catalog/product');
+                                $this->load->model('tool/image');
+                                $this->data['categories'] = array();
+                
+                                $categories_arr = array();
+                                $cat_arr = array("11", "12","1015");
+                                foreach ($cat_arr as $cat) {
+                                    $categories_arr[] = $this->model_catalog_category->getCategories($cat);
+                                }
+                
+                                foreach ($categories_arr as $categories) {
+                                    foreach ($categories as $category) {
+                                        if ($category['top']) {
+                                            $data = array(
+                                                'filter_category_id' => $category['category_id'],
+                                                'filter_sub_category' => true
+                                            );
+
+                                            if ($category['image']) {
+                                                $image = $this->model_tool_image->resize($category['image'], 300, 300);
+                                            } else {
+                                                $image = $this->model_tool_image->resize('data/no-image.jpg', 300, 300);
+                                            }
+
+                                            $product_total = $this->model_catalog_product->getTotalProducts($data);
+
+                                            $this->data['categories'][] = array(
+                                                    'name' => $category['name'],
+                                                    'prod_count'=>($this->config->get('config_product_count') ?  $product_total  : ''),
+                                                    'href' => $this->url->link('product/category', 'path=' . $category['category_id'] ),
+                                                    'thumb' => $image,
+                                                    'desc'=> $category['short_desc']
+                                            );
+                                        }
+                                    }
+                                }
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

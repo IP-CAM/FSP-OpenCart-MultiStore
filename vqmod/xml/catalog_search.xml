@@ -1,0 +1,55 @@
+<modification>
+	<id>NEWS LETTER</id>
+	<version>1.5.x</version>
+	<vqmver>2.X</vqmver>
+	<author>Tarsem</author>
+	<file name="catalog/controller/product/search.php">
+		<operation>
+			<search position="after"><![CDATA[
+           $results = $this->model_catalog_product->getProducts($data);
+            ]]></search>
+			<add><![CDATA[
+           $this->load->model('custom/product');
+                
+            ]]></add>
+		</operation>
+                
+                
+                <operation>
+			<search position="after"><![CDATA[
+          foreach ($results as $result) {
+            ]]></search>
+			<add><![CDATA[
+                            $allOptions=$this->model_custom_product->getProductOptions($result['product_id']);
+                            $productOptions='';
+                            foreach($allOptions as $option)
+                            {
+                                if($option['type']=='radio')
+                                {
+                                    $countOP=count($option['product_option_value']);
+                                    foreach($option['product_option_value'] as $key=>$name)
+                                    {
+
+                                        $productOptions=$name['name'];
+
+                                                           }
+
+                                }
+                            }
+                
+            ]]></add>
+		</operation>
+                
+                <operation>
+			<search position="after"><![CDATA[
+           'special'     => $special,
+            ]]></search>
+			<add><![CDATA[
+          'product_custm_ordering_options'     => $productOptions,
+                
+            ]]></add>
+		</operation>
+                
+	</file>
+    	
+</modification>

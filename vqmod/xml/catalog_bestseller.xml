@@ -1,0 +1,53 @@
+<modification>
+	<id>Catalog Bestseller</id>
+	<version>1.5.x</version>
+	<vqmver>1.0.8</vqmver>
+	<author>Tarsem</author>
+	<file name="catalog/controller/module/bestseller.php">
+		<operation>
+			<search position="after"><![CDATA[
+ protected function index($setting) {
+]]></search>
+			<add><![CDATA[
+                            $setting=array();
+                            
+                          $this->load->model('setting/setting');
+                      $feat_prod = $this->model_setting_setting->getSetting('bestseller',$this->config->get('config_store_id'));
+                           
+                         
+                          if(isset($feat_prod['bestseller_module'])){
+                           $setting =  $feat_prod['bestseller_module'][0];
+                            }
+]]></add>
+		</operation>
+                
+                <operation>
+			<search position="after"><![CDATA[
+ $this->data['heading_title'] = $this->language->get('heading_title');
+]]></search>
+			<add><![CDATA[
+                            if(!empty($setting))  
+                 {
+]]></add>
+		</operation>
+                
+                
+                    <operation>
+			<search position="after"><![CDATA[
+$this->render();
+]]></search>
+			<add><![CDATA[
+                            }
+]]></add>
+		</operation>
+                
+              
+		
+                
+                
+	</file>
+        
+        
+       
+        
+</modification>

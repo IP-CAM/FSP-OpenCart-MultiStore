@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Product</id>
+    <version>1.0.3</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Extra Category Information"
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.4
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+		*/
+		]]>
+    </decription>
+
+    <file name="admin/view/template/catalog/product_form.tpl" error="log">
+        
+        <operation error="log">
+            <search position="after"><![CDATA[
+				<td><input type="text" name="price" value="<?php echo $price; ?>" /></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                </tr>
+                                <tr>
+                                    <td>Purchase Price:</td>
+                                    <td><input type="text" name="purchase_price" value="<?php echo $purchase_price; ?>" /></td>
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="admin/controller/catalog/product.php" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['price'])) {
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                if (isset($this->request->post['purchase_price'])) {
+                                    $this->data['purchase_price'] = $this->request->post['purchase_price'];
+                                } elseif (!empty($product_info)) {
+                                    $this->data['purchase_price'] = $product_info['purchase_price'];
+                                } else {
+                                    $this->data['purchase_price'] = '';
+                                }
+				]]>
+            </add>
+        </operation>
+    </file>
+
+    <file name="admin/model/catalog/product.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->db->query("INSERT INTO " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_added = NOW()");
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->db->query("INSERT INTO " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', purchase_price = '" . (float)$data['purchase_price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_added = NOW()");
+				]]>
+            </add>
+        </operation>
+        <operation error="log">
+            <search position="before"><![CDATA[
+				$this->db->query("UPDATE " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_modified = NOW() WHERE product_id = '" . (int)$product_id . "'");
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->db->query("UPDATE " . DB_PREFIX . "product SET model = '" . $this->db->escape($data['model']) . "', sku = '" . $this->db->escape($data['sku']) . "', upc = '" . $this->db->escape($data['upc']) . "', ean = '" . $this->db->escape($data['ean']) . "', jan = '" . $this->db->escape($data['jan']) . "', isbn = '" . $this->db->escape($data['isbn']) . "', mpn = '" . $this->db->escape($data['mpn']) . "', location = '" . $this->db->escape($data['location']) . "', quantity = '" . (int)$data['quantity'] . "', minimum = '" . (int)$data['minimum'] . "', subtract = '" . (int)$data['subtract'] . "', stock_status_id = '" . (int)$data['stock_status_id'] . "', date_available = '" . $this->db->escape($data['date_available']) . "', manufacturer_id = '" . (int)$data['manufacturer_id'] . "', shipping = '" . (int)$data['shipping'] . "', price = '" . (float)$data['price'] . "', purchase_price = '" . (float)$data['purchase_price'] . "', points = '" . (int)$data['points'] . "', weight = '" . (float)$data['weight'] . "', weight_class_id = '" . (int)$data['weight_class_id'] . "', length = '" . (float)$data['length'] . "', width = '" . (float)$data['width'] . "', height = '" . (float)$data['height'] . "', length_class_id = '" . (int)$data['length_class_id'] . "', status = '" . (int)$data['status'] . "', tax_class_id = '" . $this->db->escape($data['tax_class_id']) . "', sort_order = '" . (int)$data['sort_order'] . "', date_modified = NOW() WHERE product_id = '" . (int)$product_id . "'");
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    <file name="admin/view/template/catalog/category_form.tpl" error="log">
+        
+        <operation error="log">
+            <search position="after"><![CDATA[
+				<td><input type="text" name="sort_order" value="<?php echo $sort_order; ?>" size="1" /></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                </tr>
+                                <tr>
+                                    <td>Show Subcategories:<br/>
+                                     <span class="help">if checked that means when click on this category all subcategories will shown on front end of site.</span> </td>
+                                    <td>
+                                       <?php if ($show_cat) { ?>
+                                        <input type="checkbox" name="show_cat" value="1" checked="checked" />
+                                    <?php } else { ?>
+                                    <input type="checkbox" name="show_cat" value="1" />
+                                    <?php } ?></td>
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+     <file name="admin/controller/catalog/category.php" error="log">
+        
+        <operation error="log">
+            <search position="before"><![CDATA[
+				if (isset($this->request->post['top'])) {
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                               if (isset($this->request->post['show_cat'])) {
+			     $this->data['show_cat'] = $this->request->post['show_cat'];
+                                } elseif (!empty($category_info)) {
+                                        $this->data['show_cat'] = $category_info['show_cat'];
+                                } else {
+                                        $this->data['show_cat'] = 0;
+                                }
+				]]>
+            </add>
+        </operation>
+    </file>
+    <file name="admin/model/catalog/category.php" error="log">
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->db->query("INSERT INTO " . DB_PREFIX . "category SET parent_id = '" . (int)$data['parent_id'] . "', `top` = '" . (isset($data['top']) ? (int)$data['top'] : 0) . "', `column` = '" . (int)$data['column'] . "', sort_order = '" . (int)$data['sort_order'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW(), date_added = NOW()");
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                              $this->db->query("INSERT INTO " . DB_PREFIX . "category SET parent_id = '" . (int)$data['parent_id'] . "', `top` = '" . (isset($data['top']) ? (int)$data['top'] : 0) . "', `column` = '" . (int)$data['column'] . "', sort_order = '" . (int)$data['sort_order'] . "',show_cat = '" . (int)$data['show_cat'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW(), date_added = NOW()");
+				]]>
+            </add>
+        </operation>
+        
+        
+         <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->db->query("UPDATE " . DB_PREFIX . "category SET parent_id = '" . (int)$data['parent_id'] . "', `top` = '" . (isset($data['top']) ? (int)$data['top'] : 0) . "', `column` = '" . (int)$data['column'] . "', sort_order = '" . (int)$data['sort_order'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW() WHERE category_id = '" . (int)$category_id . "'");
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                             $this->db->query("UPDATE " . DB_PREFIX . "category SET parent_id = '" . (int)$data['parent_id'] . "', `top` = '" . (isset($data['top']) ? (int)$data['top'] : 0) . "', `column` = '" . (int)$data['column'] . "', sort_order = '" . (int)$data['sort_order'] . "',show_cat = '" . (int)$data['show_cat'] . "', status = '" . (int)$data['status'] . "', date_modified = NOW() WHERE category_id = '" . (int)$category_id . "'");
+				]]>
+            </add>
+        </operation>
+        
+        
+        
+    </file>
+    
+    
+            
+</modification>

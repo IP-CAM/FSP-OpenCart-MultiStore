@@ -1,0 +1,40 @@
+<modification>
+    <id>Contact us page</id>
+    <version>1.5.x</version>
+    <vqmver>2.X</vqmver>
+    <author>Tarsem</author>
+    <file name="catalog/controller/information/contact.php">
+        <operation>
+            <search position="replace"><![CDATA[
+                  if (empty($this->session->data['captcha']) || ($this->session->data['captcha'] != $this->request->post['captcha'])) {
+            ]]>
+            </search>
+            <add><![CDATA[
+                 if (isset($this->session->data['captcha'])) {
+            ]]>
+            </add>
+        </operation>
+                
+        <operation>
+            <search position="replace"><![CDATA[
+                 $this->error['captcha'] = $this->language->get('error_captcha');
+            ]]>
+            </search>
+            <add><![CDATA[
+                
+            ]]>
+            </add>
+        </operation>
+                
+        <operation>
+            <search position="after"><![CDATA[
+                 $this->data['fax'] = $this->config->get('config_fax');
+            ]]>
+            </search>
+            <add><![CDATA[
+                $this->data['config_email'] = $this->config->get('config_email');        
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

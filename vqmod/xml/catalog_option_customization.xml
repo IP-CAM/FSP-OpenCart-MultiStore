@@ -1,0 +1,53 @@
+<modification>
+    <id>Catalog Options Customization</id>
+    <version>1.0.3</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Tarsem Saini</author>
+    <decription><![CDATA[
+        
+		/*
+			This file is used to customize the Options.This enables Information type in Option Types.
+
+		*/
+		]]>
+    </decription>
+	<!-- code to change in view part -->
+    <file name="catalog/model/catalog/product.php" error="log">
+
+         <operation error="log">
+            <search position="replace"><![CDATA[
+				
+                               if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
+                              
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image' || $product_option['type'] == 'information') {
+        ]]>
+            </add>
+            </operation>
+   
+        
+    </file>
+    
+    
+    
+     <file name="catalog/controller/product/product.php" error="log">
+
+         <operation error="log">
+            <search position="replace"><![CDATA[
+				
+                              if ($option['type'] == 'select' || $option['type'] == 'radio' || $option['type'] == 'checkbox' || $option['type'] == 'image') { 
+                              
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                if ($option['type'] == 'select' || $option['type'] == 'radio' || $option['type'] == 'checkbox' || $option['type'] == 'image' || $option['type'] == 'information') { 
+        ]]>
+            </add>
+            </operation>
+   
+        
+    </file>
+
+</modification>

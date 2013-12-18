@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Extra Product Information</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Extra Product Information Tabs"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="catalog/controller/product/product.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$this->data['points'] = $product_info['points'];
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->data['tag'] = $product_info['tag'];
+                                $this->data['text_delivery_days'] = $this->language->get('text_delivery_days');
+				]]>
+            </add>
+        </operation>
+        
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$this->data['options'] = array();
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->data['alloptions'] = array();
+                        $this->load->model('custom/product');
+                        $this->data['alloptions'] = $this->model_custom_product->getallOptions();
+				]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/language/english/product/product.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_filetype']    = 'Invalid file type!';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                              $_['text_delivery_days'] =  '<b>Delivery time: </b> 3 days';
+				]]>
+            </add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/french/product/product.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_filetype']		= 'Fichier invalide !';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                              $_['text_delivery_days'] =  '<b>Lieferzeit: </b> 3 tage';
+				]]>
+            </add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/dutch/product/product.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_filetype']    = 'Ongeldige bestands-extensie!';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                              $_['text_delivery_days'] =  '<b>levertijd: </b> 3 dagen';
+				]]>
+            </add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/de_DE/product/product.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['tab_description']   = 'Beschreibung';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                              $_['text_delivery_days'] =  '<b>Lieferzeit: </b> 3 tage';
+				]]>
+            </add>
+        </operation>
+    </file>
+
+	
+
+</modification>

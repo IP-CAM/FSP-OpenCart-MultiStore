@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Meta Title Admin</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Tarsem Lal, Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Meta Title Admin"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Tarsem Lal, Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+    <file name="admin/model/catalog/category.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "'");
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "',meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "',short_desc = '" . $this->db->escape($value['short_desc']) . "', description = '" . $this->db->escape($value['description']) . "'");
+				]]>
+            </add>
+        </operation>
+        <operation error="log">
+            <search position="after"><![CDATA[
+                                'meta_keyword'     => $result['meta_keyword'],
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                'meta_title'     => $result['meta_title'],
+                                'short_desc'     => $result['short_desc'],
+				]]>
+            </add>
+        </operation>
+    </file>
+    <file name="admin/view/template/catalog/category_form.tpl" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+				<td><?php echo $entry_meta_description; ?></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                <td>Meta Title:</td>
+                                <td><textarea name="category_description[<?php echo $language['language_id']; ?>][meta_title]" cols="40" rows="5"><?php echo isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['meta_title'] : ''; ?></textarea></td>
+                            </tr>			  
+                            <tr>
+				]]>
+            </add>
+        </operation>
+        
+        
+         <operation error="log">
+            <search position="before"><![CDATA[
+				 <td><?php echo $entry_description; ?></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                <td>Short desciption:</td>
+                                <td><textarea name="category_description[<?php echo $language['language_id']; ?>][short_desc]" cols="40" rows="5"><?php echo isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['short_desc'] : ''; ?></textarea></td>
+                            </tr>			  
+                            <tr>
+				]]>
+            </add>
+        </operation>
+        
+        
+        
+    </file>
+    
+    
+    <file name="admin/model/catalog/product.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                                    $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', description = '" . $this->db->escape($value['description']) . "', tag = '" . $this->db->escape($value['tag']) . "'");
+                                    ]]>
+            </search>
+            <add trim="true"><![CDATA[
+                
+               
+                                $this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET product_id = '" . (int)$product_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($value['name']) . "', meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', mrkt_name= '" . $this->db->escape($value['mrkt_name']) . "', description = '" . $this->db->escape($value['description']) . "', tag = '" . $this->db->escape($value['tag']) . "'");
+				]]>
+            </add>
+        </operation>
+        <operation error="log">
+            <search position="after"><![CDATA[
+                                'meta_keyword'     => $result['meta_keyword'],
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                'meta_title'     => $result['meta_title'],
+                                'mrkt_name'     => $result['mrkt_name'],
+				]]>
+            </add>
+        </operation>
+    </file>
+    <file name="admin/view/template/catalog/product_form.tpl" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+				<td><?php echo $entry_meta_description; ?></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                <td>Meta Title:</td>
+                                <td><textarea name="product_description[<?php echo $language['language_id']; ?>][meta_title]" cols="40" rows="5"><?php echo isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['meta_title'] : ''; ?></textarea></td>
+                            </tr>
+                            <tr>
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    
+     <file name="admin/view/template/catalog/product_form.tpl" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+				 
+                                   <td><?php echo $entry_description; ?></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                <td>Marketing Name:</td>
+                                <td><textarea name="product_description[<?php echo $language['language_id']; ?>][mrkt_name]" cols="40" rows="5"><?php echo isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['mrkt_name'] : ''; ?></textarea></td>
+                            </tr>
+                            <tr>
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    
+    <file name="admin/view/template/setting/setting.tpl" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+            
+            <td><?php echo $entry_meta_description; ?></td>
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                               <tr><td>Meta title:</td>   <td><input type="text" name="config_meta_title" value="<?php echo $config_meta_title; ?>" /></tr>
+                                <tr><td>Meta Tag Keywords:</td><td><textarea name="config_meta_keywords" cols="40" rows="5"><?php echo $config_meta_keywords ?></textarea></td></tr>
+				]]>
+            </add>
+        </operation>
+       
+    </file>
+    
+    <file name="admin/controller/setting/setting.php" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+            
+         if (isset($this->request->post['config_meta_description'])) {
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                               if (isset($this->request->post['config_meta_keywords'])) {
+			$this->data['config_meta_keywords'] = $this->request->post['config_meta_keywords'];
+		} else {
+			$this->data['config_meta_keywords'] = $this->config->get('config_meta_keywords');
+		}
+                 if (isset($this->request->post['config_meta_title'])) {
+			$this->data['config_meta_title'] = $this->request->post['config_meta_title'];
+		} else {
+			$this->data['config_meta_title'] = $this->config->get('config_meta_title');
+		}
+				]]>
+            </add>
+        </operation>
+       
+    </file>
+    
+</modification>

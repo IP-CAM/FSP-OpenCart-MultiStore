@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Product</id>
+    <version>1.0.3</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Extra Product Information"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Pagination System Library Changes
+			
+			Version: 1.0.4
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="system/library/pagination.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				public $num_links = 10;
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                public $num_links = 7;
+				]]>
+            </add>
+        </operation>
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$output .= ' .... ';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $output .= '<li class="extra-pagination"> .... </li>';
+				]]>
+            </add>
+        </operation>
+    </file>
+
+	
+
+</modification>

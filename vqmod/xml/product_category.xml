@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Product</id>
+    <version>1.0.3</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Extra Category Information"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.4
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="catalog/controller/product/category.php" error="log">
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url)
+            ]]></search>
+            <add trim="true"><![CDATA[
+                'href' => $this->url->link('product/category', 'path=' . $fstCatKey . '_' . $result['category_id'] . $url)
+            ]]></add>
+        </operation>
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                    $results = $this->model_catalog_category->getCategories($category_id);
+            ]]></search>
+            <add trim="true"><![CDATA[
+                $catPath = $this->request->get['path'];
+                $catPathArr = explode("_", $catPath);
+                $fstCatKey = reset($catPathArr);
+                $data = array(
+                    'filter_category_id' => $fstCatKey,
+                    'filter_sub_category' => true
+                );
+                $this->data['childrenFirstLevel'] = 'All';
+                $product_total = $this->model_catalog_product->getTotalProducts($data);
+                $this->data['categories']['All'] = array(
+                    'name' => $this->language->get('text_all') . ($this->config->get('config_product_count') ? ' (' . $product_total . ')' : ''),
+                    'href' => $this->url->link('product/category', 'path=' . $fstCatKey . $url)
+                );
+               
+                $this->data['childrenSecondLevel'] = array();
+                
+                if (count($catPathArr) > 1) {
+                    $lastKey = end($catPathArr);
+                    $this->data['childrenFirstLevel'] = $lastKey;
+                    $results = $this->model_catalog_category->getCategories($lastKey);
+                    foreach ($results as $result) {
+                        $data = array(
+                            'filter_category_id' => $result['category_id'],
+                            'filter_sub_category' => true
+                        );
+                        $product_total = $this->model_catalog_product->getTotalProducts($data);
+                        $this->data['childrenSecondLevel'][] = array(
+                            'name' => $result['name'] . ($this->config->get('config_product_count') ? ' (' . $product_total . ')' : ''),
+                            'category_id' => $result['category_id'],
+                            'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url)
+                        );
+                    }
+                }
+                $results = $this->model_catalog_category->getCategories($fstCatKey);
+            ]]></add>
+        </operation>
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                    $this->data['categories'][] = array(
+            ]]></search>
+            <add trim="true"><![CDATA[
+                    $this->data['categories'][$result['category_id']] = array(
+            ]]></add>
+        </operation>
+    </file>
+
+    <file name="catalog/language/english/product/category.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+                    $_['text_manufacturer'] = 'Brand:';
+            ]]></search>
+            <add trim="true"><![CDATA[
+                    $_['text_all'] = 'All';
+            ]]></add>
+        </operation>
+    </file>
+    
+    
+    <file name="catalog/controller/product/category.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+                    $product_total = $this->model_catalog_product->getTotalProducts($data);
+            ]]></search>
+            <add trim="true"><![CDATA[
+                    $this->data['child_cat']=array();
+                    $currentCatDetail=$this->model_catalog_category->getCategory($category_id);
+                    if(isset($currentCatDetail['show_cat']))
+                    {
+                        if($currentCatDetail['show_cat']==1)
+                        {
+                            $results = $this->model_catalog_category->getCategories($category_id);
+                            foreach ($results as $result) {
+                                $data = array(
+                                    'filter_category_id' => $result['category_id'],
+                                    'filter_sub_category' => true
+                                );
+                                if ($result['image']) {
+                                    $image = $this->model_tool_image->resize($result['image'], 300, 300);
+                                } else {
+                                    $image = $this->model_tool_image->resize('data/no-image.jpg', 300, 300);
+                                }
+                                $product_total = $this->model_catalog_product->getTotalProducts($data);
+                             
+                                $this->data['child_cat'][] = array(
+                                        'name' => $result['name'],
+                                        'prod_count'=>($this->config->get('config_product_count') ?  $product_total  : ''),
+                                        'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'] . $url),
+                                        'thumb' => $image,
+                                        'desc'=> $result['short_desc']
+                                );
+                
+                                if(isset($this->request->get['p']) && $this->request->get['p']=='all'){
+                                    $this->data['child_cat']=array();
+                                }
+                            }
+                        }
+                    }
+                    $data = array(
+                        'filter_category_id' => $category_id,
+                        'filter_sub_category' => true,
+                        'filter_filter' => $filter,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'start' => ($page - 1) * $limit,
+                        'limit' => $limit
+                    );
+            ]]></add>
+        </operation>
+    </file>
+</modification>

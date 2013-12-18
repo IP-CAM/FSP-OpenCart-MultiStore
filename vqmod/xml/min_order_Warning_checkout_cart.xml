@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Checkout Cart Min Order</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Checkout Cart Min Order"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Checkout Cart Min Order
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Tarsem Lal,Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+    <file name="catalog/controller/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$this->data['totals'] = $total_data;
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->model_total_total->getTotal($total_amount_cart, $total, $taxes);
+                                $total_price_cart = preg_replace('/[^0-9.,]+/','',$total_amount_cart[0]['text']);
+                                $total_price_sign_cart = preg_replace('/[0-9.,]+/','',$total_amount_cart[0]['text']);
+                                if($total_price_cart < 10){ 
+                                    $this->data['error_warning'] = sprintf($this->language->get('error_minimum_order_amount') , $total_price_sign_cart.'10');;
+                                }
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/language/english/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_minimum']          = 'Minimum order amount for %s is %s!';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $_['error_minimum_order_amount']          = 'Sorry, there is a minimum order value of %s !';
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/language/dutch/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_minimum']     = 'Minimum te bestellen aantal voor product %s is %s.';	
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $_['error_minimum_order_amount']     = 'Sorry, het totaalbedrag van uw winkelmandje is lager dan de minimale orderwaarde van %s !';	
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/language/french/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_minimum']			= 'Le montant minimum pour cette commande %s est de %s!';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $_['error_minimum_order_amount']			= 'Montant de la commande minimum est de %s !';
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/language/de_DE/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$_['error_shipping']    = 'Achtung: Versandart ist ein Pflichtfeld!';
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $_['error_minimum_order_amount']     = 'Mindestbestellmenge ist %s !';
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/controller/checkout/checkout.php" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+				$products = $this->cart->getProducts();
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->load->model('setting/extension');
+                                $total = 0;
+                                $taxes = $this->cart->getTaxes();
+                                $totals_amount_cart = array();	
+                                $sort_order = array();
+                                $results = $this->model_setting_extension->getExtensions('total');
+                                foreach ($results as $key => $value) {
+                                    $sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+				}
+                                array_multisort($sort_order, SORT_ASC, $results);
+                                foreach ($results as $result) {
+                                    if ($this->config->get($result['code'] . '_status')) {
+                                        $this->load->model('total/' . $result['code']);
+                                        $this->{'model_total_' . $result['code']}->getTotal( $totals_amount_cart , $total, $taxes);
+                                    }
+                                    $sort_order = array();
+                                    foreach ( $totals_amount_cart as $key => $value) {
+                                        $sort_order[$key] = $value['sort_order'];
+                                    }
+                                    array_multisort($sort_order, SORT_ASC, $totals_amount_cart);
+				}
+                                $total_amount_cart = end($totals_amount_cart);
+                                $total_price_cart = preg_replace('/[^0-9.,]+/','',$total_amount_cart['text']);
+                                if($total_price_cart < 10){
+                                    $this->redirect($this->url->link('checkout/cart'));
+                                }
+                            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    
+</modification>

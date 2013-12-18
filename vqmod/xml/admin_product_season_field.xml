@@ -1,0 +1,84 @@
+<modification>
+    <id>Admin_product_Season_Field</id>
+    <version>1.5.x</version>
+    <vqmver>1.0.8</vqmver>
+    <author>Hanish</author>
+    <file name="admin/view/template/catalog/product_list.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+                <td class="left"><?php if ($sort == 'p.status') { ?>
+            ]]></search>
+            <add><![CDATA[
+                <td class="left">Season</td>
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+                <td><select name="filter_status">
+            ]]></search>
+            <add><![CDATA[
+                <td></td>
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+                <td class="left"><?php echo $product['status']; ?></td>
+            ]]></search>
+            <add><![CDATA[
+                <td class="left"><?php echo $product['season']; ?></td>
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/view/template/catalog/product_form.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+                <td><?php echo $entry_status; ?></td>
+            ]]></search>
+            <add><![CDATA[
+                    <td>Season</td>
+                    <td>
+                        <select name="season">
+                            <option <?php if($season=="spring"){ echo 'selected="selected"'; } ?> value="spring">Spring</option>
+                            <option <?php if($season=="summer"){ echo 'selected="selected"'; } ?> value="summer">Summer</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/controller/catalog/product.php">
+        <operation>
+            <search position="after"><![CDATA[
+                'quantity'   => $result['quantity'],
+            ]]></search>
+            <add><![CDATA[
+                    'season'   =>   $result['season'],
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+                if (isset($this->request->post['status'])) {
+            ]]></search>
+            <add><![CDATA[
+                if (isset($this->request->post['season'])) {
+                    $this->data['season'] = $this->request->post['season'];
+                } elseif (!empty($product_info)) {
+                    $this->data['season'] = $product_info['season'];
+		} else {
+                    $this->data['season'] = 'spring';
+          	}
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/model/catalog/product.php">
+        <operation>
+            <search position="before"><![CDATA[
+                if (isset($data['image'])) {
+            ]]></search>
+            <add><![CDATA[
+                $this->db->query("UPDATE " . DB_PREFIX . "product SET season = '" . $data['season'] . "' WHERE product_id = '" . (int)$product_id . "'");
+            ]]></add>
+        </operation>
+    </file>
+</modification>

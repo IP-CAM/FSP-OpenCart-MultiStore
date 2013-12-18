@@ -1,0 +1,120 @@
+<modification>
+	<id>Admin Bestseller</id>
+	<version>1.5.x</version>
+	<vqmver>1.0.8</vqmver>
+	<author>Tarsem</author>
+	<file name="admin/view/template/module/bestseller.tpl">
+		<operation>
+			<search position="replace"><![CDATA[
+ <div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>
+]]></search>
+			<add><![CDATA[
+<div class="buttons">
+                <select name="store" onchange="loadstore(this.value);">
+                    <option value="0">Default</option>
+                    <?php foreach($stores as $store){ ?>
+                    <option value="<?php echo $store['store_id']; ?>" <?php if($store['store_id'] == $curr_store){ echo 'selected="selected"'; } ?> ><?php echo $store['name']; ?></option>
+                    <?php } ?> 
+                </select>
+                <a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>
+]]></add>
+		</operation>
+                
+                <operation>
+			<search position="before"><![CDATA[
+var module_row = <?php echo $module_row; ?>;
+]]></search>
+			<add><![CDATA[
+ function loadstore(id){
+var url ='<?php echo html_entity_decode($action); ?>';
+if( id > 0 ){
+location =url+'&store_id='+id;
+}else{
+location =url;
+}
+}
+]]></add>
+		</operation>
+                
+                
+                 <operation>
+			<search position="after"><![CDATA[
+  <td class="left"><a onclick="addModule();" class="button"><?php echo $button_add_module; ?></a></td>
+]]></search>
+			<add><![CDATA[
+ <td class="left"><input type="hidden" name="store_id" value="<?php echo $_GET['store_id']; ?>" /></td>
+]]></add>
+		</operation>
+                
+                
+	</file>
+        
+        
+        <file name="admin/controller/module/bestseller.php">
+	      
+                 <operation>
+			<search position="after"><![CDATA[
+ $this->load->model('setting/setting');
+]]></search>
+			<add><![CDATA[
+ 
+                                    $this->load->model('setting/store');
+
+        $this->data['stores'] = $this->model_setting_store->getStores();
+
+        $this->data['curr_store'] = 0;
+        if (isset($this->request->get['store_id'])) {
+            $this->data['curr_store'] = $this->request->get['store_id'];
+        }
+]]></add>
+		</operation>
+                
+                
+                  <operation>
+			<search position="after"><![CDATA[
+if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+]]></search>
+			<add><![CDATA[
+ 
+                                       
+                                       $store_id = $this->request->post['store_id'];
+            unset($this->request->post['store_id']);
+                                        
+]]></add>
+		</operation>
+                
+                
+                    <operation>
+			<search position="replace"><![CDATA[
+$this->model_setting_setting->editSetting('bestseller', $this->request->post);	
+]]></search>
+			<add><![CDATA[
+         
+                            
+         $this->model_setting_setting->editSetting('bestseller', $this->request->post,$store_id);	
+                                        
+]]></add>
+		</operation>
+                
+                
+                
+                <operation>
+			<search position="replace"><![CDATA[
+$this->data['modules'] = $this->config->get('bestseller_module');
+]]></search>
+			<add><![CDATA[
+ 
+          $feat_prod = $this->model_setting_setting->getSetting('bestseller', $this->data['curr_store']);
+                            $this->data['modules']=array();
+                          if(isset($feat_prod['bestseller_module'])){
+                            $this->data['modules'] =  $feat_prod['bestseller_module'];
+                            }
+                                        
+]]></add>
+		</operation>
+                
+                
+                
+	</file>
+        
+</modification>
