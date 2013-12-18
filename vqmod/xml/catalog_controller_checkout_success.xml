@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Success Message</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Tarsem Lal</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Success Message".This Meggase comes when customer completes the order.
+
+			---------------------------------------------------------------------
+			Name:		Success Message
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Tarsem Lal
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="catalog/controller/checkout/success.php" error="log">
+        
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->data['text_message'] = sprintf($this->language->get('text_guest'), $this->url->link('information/contact'));
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                               $this->data['text_message'] = sprintf($this->language->get('text_guest'), $this->url->link('information/contact'), $this->config->get('config_owner'));
+				]]>
+            </add>
+        </operation>
+      
+    </file>
+   
+</modification>

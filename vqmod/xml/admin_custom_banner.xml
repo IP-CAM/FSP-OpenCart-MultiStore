@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Catalog_model_design_banner</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+                    This file is for "Banners"
+                    ---------------------------------------------------------------------
+                    Name:		Language Dependent Banner Module 
+                    Version: 1.0.0
+                    OpenCart:	1.5.5.1
+                    Author: 	Hanish Singla
+                    Copyright 2012, 2013
+		*/
+		]]>
+    </decription>
+    
+    <file name="admin/view/template/common/header.tpl" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                <li><a href="<?php echo $banner; ?>"><?php echo $text_banner; ?></a></li>
+            ]]></search>
+            <add trim="true"><![CDATA[
+                                  
+            ]]></add>
+        </operation>
+    </file>
+</modification>

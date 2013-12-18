@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Add to Cart</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Add to Cart".This replaces a line which checks options for a product while adding it to Cart.
+                        This code checks count of values for required options.If its count is greater than 1 then it will gives error but if there is only one Value for option
+                        then it adds the that option and value to product array.
+			
+
+			---------------------------------------------------------------------
+			Name:		Add to Cart
+			
+			Version: 1.0.0
+
+			OpenCart:	1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="catalog/controller/checkout/cart.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                        $json['error']['option'][$product_option['product_option_id']] = sprintf($this->language->get('error_required'), $product_option['name']);
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                    if (count($product_option['option_value']) > 1) {
+                        $json['error']['option'][$product_option['product_option_id']] = sprintf($this->language->get('error_required'), $product_option['name']);
+                    } else {
+                        $option[$product_option['product_option_id']] = $product_option['option_value'][0]['product_option_value_id'];
+                    }
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+</modification>

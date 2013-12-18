@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Meta Title Catalog</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Tarsem Lal,Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Meta Title Catalog"
+
+			
+
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Tarsem Lal,Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+    <file name="catalog/controller/product/category.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+				$this->document->setTitle($category_info['name']);
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                if(!empty($category_info['meta_title']))
+                                {
+                                    $this->document->setTitle($category_info['meta_title']);
+                                }
+                                else
+                                {
+                                    $this->document->setTitle($category_info['name']);
+                                }
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    <file name="catalog/controller/product/product.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                                $this->document->setTitle($product_info['name']);
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                    if(!empty($product_info['meta_title']))
+                                    {
+                                        $this->document->setTitle($product_info['meta_title']);
+                                    }
+                                    else
+                                    {
+                                        $this->document->setTitle($product_info['name']);
+                                    }
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/model/catalog/product.php" error="log">
+        <operation error="log">
+            <search position="before"><![CDATA[
+                                'meta_description' => $query->row['meta_description'],
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                'meta_title' => $query->row['meta_title'],
+				]]>
+            </add>
+        </operation>
+    </file>
+    
+    <file name="catalog/controller/common/home.php" error="log">
+        <operation error="log">
+            <search position="replace"><![CDATA[
+                                $this->document->setTitle($this->config->get('config_title'));
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                                $this->document->setTitle($this->config->get('config_meta_title'));
+                                $this->document->setKeywords($this->config->get('config_meta_keywords'));
+                              
+				]]>
+            </add>
+        </operation>
+       
+    </file>
+    
+</modification>

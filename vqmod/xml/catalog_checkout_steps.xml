@@ -1,0 +1,159 @@
+<modification>
+    <id>Payment Methods</id>
+    <version>1.5.x</version>
+    <vqmver>2.X</vqmver>
+    <author>Tarsem</author>
+    <file name="catalog/controller/checkout/confirm.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $this->language->load('checkout/checkout');
+            ]]></search>
+            <add><![CDATA[
+                if ($this->config->get('config_checkout_id')) {
+                    $this->load->model('catalog/information');
+                    $information_info = $this->model_catalog_information->getInformation($this->config->get('config_checkout_id'));
+                    if ($information_info) {
+                        $this->data['text_agree'] = sprintf($this->language->get('text_agree'), $this->url->link('information/information/info', 'information_id=' . $this->config->get('config_checkout_id'), 'SSL'), $information_info['title'], $information_info['title']);
+                    } else {
+                        $this->data['text_agree'] = '';
+                    }
+		} else {
+                    $this->data['text_agree'] = '';
+		}
+		
+		if (isset($this->session->data['agree'])) { 
+                    $this->data['agree'] = $this->session->data['agree'];
+		} else {
+                    $this->data['agree'] = '';
+		}
+                $this->data['text_comments'] = $this->language->get('text_comments');
+                if (isset($this->session->data['comment'])) {
+                    $this->data['comment'] = $this->session->data['comment'];
+		} else {
+                    $this->data['comment'] = '';
+		}
+                $this->data['button_confirm'] = $this->language->get('button_continue');
+            ]]></add>
+        </operation>
+    </file>
+        
+        
+    <file name="catalog/controller/checkout/payment_method.php">
+        <operation>
+            <search position="before"><![CDATA[
+                public function validate() {
+            ]]></search>
+            <add><![CDATA[
+                public function checkTerms() {
+                    $this->language->load('checkout/checkout');
+                    $json = array();
+                    if ($this->config->get('config_checkout_id')) {
+                        $this->load->model('catalog/information');
+                        $information_info = $this->model_catalog_information->getInformation($this->config->get('config_checkout_id'));
+                        if ($information_info && !isset($this->request->post['agree'])) {
+                            $json['error']['warning'] = sprintf($this->language->get('error_agree'), $information_info['title']);
+                        }
+                    }
+                    if (!$json) {
+                        $this->session->data['comment'] = strip_tags($this->request->post['comment']);
+                    }	
+                    $this->response->setOutput(json_encode($json));
+                }
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/english/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $_['text_checkout_confirm']          = 'Step 6: Confirm Order';
+            ]]></search>
+            <add><![CDATA[
+                $_['text_checkout_confirm']          = 'Step 4: Confirm Order';
+                $_['text_checkout_do_payment']          = 'Step 5: Payment';
+                $_['text_checkout_payment_failed']          = 'Sorry your payment has not been successfully processed. Please try again.';
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/english/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $_['error_agree']                    = 'Warning: You must agree to the %s!';
+            ]]></search>
+            <add><![CDATA[
+                $_['error_agree']                    = 'To confirm your order you must agree to the %s!';
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/dutch/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $_['text_checkout_confirm']          = 'Stap 6: Bestelling bevestigen';
+            ]]></search>
+            <add><![CDATA[
+                $_['text_checkout_confirm']          = 'Stap 4: Bestelling bevestigen';
+                $_['text_checkout_do_payment']       = 'Stap 5: Betaling';
+                $_['text_checkout_payment_failed']   = 'Sorry uw betaling is nog niet verwerkt. Probeer het opnieuw.';         
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/de_DE/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $_['text_checkout_confirm']          = 'Schritt 6: Auftrag bestätigen';
+            ]]></search>
+            <add><![CDATA[
+                $_['text_checkout_confirm']             = 'Schritt 4: Auftrag bestätigen';
+                $_['text_checkout_do_payment']          = 'Schritt 5: Bezahlung';
+                $_['text_checkout_payment_failed']      = 'Es tut uns leid Ihre Zahlung nicht erfolgreich verarbeitet. Bitte versuchen Sie es erneut.'; 
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/language/french/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $_['text_checkout_confirm']				= '&Eacute;tape 6 - Confirmation de la commande';
+            ]]></search>
+            <add><![CDATA[
+                $_['text_checkout_confirm']				= '&Eacute;tape 4 - Confirmation de la commande';
+                $_['text_checkout_do_payment']                          = '&Eacute;tape 5 - Paiement';
+            ]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/controller/checkout/checkout.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $this->data['text_checkout_payment_method'] = $this->language->get('text_checkout_payment_method');
+            ]]></search>
+            <add><![CDATA[
+                $this->data['text_checkout_do_payment'] = $this->language->get('text_checkout_do_payment');
+                $this->data['text_checkout_payment_failed'] = $this->language->get('text_checkout_payment_failed');
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/controller/checkout/guest.php">
+        <operation>
+            <search position="replace"><![CDATA[
+                $json['error']['telephone'] = $this->language->get('error_telephone');
+            ]]></search>
+            <add><![CDATA[
+                
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/controller/checkout/register.php">
+        <operation>
+            <search position="replace"><![CDATA[
+                $json['error']['telephone'] = $this->language->get('error_telephone');
+            ]]></search>
+            <add><![CDATA[
+                
+            ]]></add>
+        </operation>
+    </file>
+</modification>

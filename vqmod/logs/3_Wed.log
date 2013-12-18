@@ -1,0 +1,28 @@
+---------- Date: 2013-12-11 06:55:56 ~ IP : 122.173.133.87 ----------
+REQUEST URI : /demo/admin/index.php?route=module/vqmod_manager&amp;token=c93d7f46b4fe6b02b76905302f7bcb61
+MOD DETAILS:
+   modFile   : /var/www/html/opencartsites/plantbulb.co.uk/demo/vqmod/xml/catalog_model_design_banner.xml
+   id        : Catalog_model_design_banner
+   version   : 1.0.0
+   vqmver    : 2.2.1
+   author    : Hanish Singla
+
+File Name    : admin/view/template/common/header.tpl(0)
+VQModObject::applyMod - SEARCH NOT FOUND (SKIPPED): <li><a href="<?php echo $banner; ?>"><?php echo $text_banner; ?></a></li>
+----------------------------------------------------------------------
+
+
+---------- Date: 2013-12-11 10:39:06 ~ IP : 66.249.76.17 ----------
+REQUEST URI : /index.php?route=product/product&amp;path=35716_35731_35742&amp;product_id=111708&amp;iframe=yes
+MOD DETAILS:
+   modFile   : /var/www/html/opencartsites/plantbulb.co.uk/demo/vqmod/xml/cpf.xml
+   id        : Custom Product Field v1.2
+   version   : For OpenCart 1.5.x
+   vqmver    : 2.0.0
+   author    : MarketInSG
+
+File Name    : catalog/language/*/product/product.php(0)
+VQModObject::applyMod - SEARCH NOT FOUND (ABORTING MOD): ?>
+----------------------------------------------------------------------
+
+

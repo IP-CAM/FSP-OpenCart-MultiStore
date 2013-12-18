@@ -1,0 +1,524 @@
+<modification>
+	<id>Custom Product Field v1.2</id>
+	<version>For OpenCart 1.5.x</version>
+	<vqmver>2.0.0</vqmver>
+	<author>MarketInSG</author>
+<!--ADMIN-->
+	<file name="admin/controller/catalog/product.php">
+		<operation>
+			<search position="before"><![CDATA[
+				$this->template = 'catalog/product_form.tpl';
+			]]></search>
+			<add><![CDATA[
+				$this->data['text_select'] = $this->language->get('text_select');
+				$this->data['tab_cpf'] = $this->language->get('tab_cpf');
+				
+				if ($this->config->get('cpf_fields')) {
+					$fields = $this->config->get('cpf_fields');
+				} else {
+					$fields = array();
+				}
+				
+				$this->load->model('catalog/option');
+				
+				$field_data = array();
+				
+				foreach ($this->data['languages'] as $language) {
+					if (!empty($this->data['product_description'][$language['language_id']]['cpf'])) {
+						$cpf = unserialize($this->data['product_description'][$language['language_id']]['cpf']);
+					} else {
+						$cpf = array();
+					}
+				
+					foreach ($fields as $field) {
+						$option = $this->model_catalog_option->getOption($field['option_id']);
+						
+						if ($option) {
+							if ($option['type'] == 'select' || $option['type'] == 'radio') {
+								$values = array();
+								
+								$option_values = $this->model_catalog_option->getOptionValueDescriptions($field['option_id']);
+								
+								foreach ($option_values as $option_value) {
+									if (isset($this->request->post['cpf'][$language['language_id']][$field['option_id']]) && $this->request->post['cpf'][$language['language_id']][$field['option_id']] == $option_value['option_value_id']) {
+										$selected = $this->request->post['cpf'][$language['language_id']][$field['option_id']];
+									} else {
+										$selected = (!empty($cpf[$field['option_id']])) ? $cpf[$field['option_id']] : 0;
+									}
+									
+									$values[] = array(
+										'option_value_id'		=> $option_value['option_value_id'],
+										'name'					=> $option_value['option_value_description'][$language['language_id']]['name'],
+										'selected'				=> $selected
+									);
+								}
+								
+								$option_description = $this->model_catalog_option->getOptionDescriptions($field['option_id']);
+								
+								$field_data[] = array(
+									'language_id'	=> $language['language_id'],
+									'name' 			=> $option_description[$language['language_id']]['name'],
+									'type' 			=> $option['type'],
+									'option_id'		=> $option['option_id'],
+									'status'		=> $field['status'],
+									'required'		=> $field['required'],
+									'sort_order'	=> $field['sort_order'],
+									'values'		=> $values
+								);
+							} elseif ($option['type'] == 'checkbox') {
+								$values = array();
+								
+								$option_values = $this->model_catalog_option->getOptionValueDescriptions($field['option_id']);
+								
+								foreach ($option_values as $option_value) {
+									if (isset($this->request->post['cpf'][$language['language_id']][$field['option_id']]) && in_array($option_value['option_value_id'], $this->request->post['cpf'][$language['language_id']][$field['option_id']])) {
+										$selected = $option_value['option_value_id'];
+									} else {
+										$selected = (!empty($cpf[$field['option_id']]) && is_array($cpf[$field['option_id']]) && in_array($option_value['option_value_id'], $cpf[$field['option_id']])) ? $option_value['option_value_id'] : 0;
+									}
+									
+									$values[] = array(
+										'option_value_id'		=> $option_value['option_value_id'],
+										'name'					=> $option_value['option_value_description'][$language['language_id']]['name'],
+										'selected'				=> $selected
+									);
+								}
+								
+								$option_description = $this->model_catalog_option->getOptionDescriptions($field['option_id']);
+								
+								$field_data[] = array(
+									'language_id'	=> $language['language_id'],
+									'name' 			=> $option_description[$language['language_id']]['name'],
+									'type' 			=> $option['type'],
+									'option_id'		=> $option['option_id'],
+									'status'		=> $field['status'],
+									'required'		=> $field['required'],
+									'sort_order'	=> $field['sort_order'],
+									'values'		=> $values
+								);
+							} else {
+								$value = (!empty($cpf[$field['option_id']])) ? $cpf[$field['option_id']] : '';;
+								
+								if (isset($this->request->post['cpf'][$language['language_id']][$field['option_id']])) {
+									$value = $this->request->post['cpf'][$language['language_id']][$field['option_id']];
+								}
+								
+								$option_description = $this->model_catalog_option->getOptionDescriptions($field['option_id']);
+								
+								$field_data[] = array(
+									'language_id'	=> $language['language_id'],
+									'name' 			=> $option_description[$language['language_id']]['name'],
+									'type' 			=> $option['type'],
+									'option_id'		=> $option['option_id'],
+									'status'		=> $field['status'],
+									'required'		=> $field['required'],
+									'sort_order'	=> $field['sort_order'],
+									'value'			=> $value
+								);
+							}
+						}
+					}
+				}
+				
+				$sort_order = array(); 
+				
+				foreach ($field_data as $key => $value) {
+					$sort_order[$key] = $value['sort_order'];
+				}
+				
+				array_multisort($sort_order, SORT_ASC, $field_data);
+				
+				$this->data['fields'] = array();
+				
+				foreach ($field_data as $field) {
+					$this->data['fields'][] = $field;
+				}
+			]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+				function validateForm() {
+			]]></search>
+			<add><![CDATA[
+				if ($this->config->get('cpf_fields')) {
+					$fields = $this->config->get('cpf_fields');
+				} else {
+					$fields = array();
+				}
+				
+				$this->load->model('localisation/language');
+				
+				foreach ($this->model_localisation_language->getLanguages() as $language) {
+					foreach ($fields as $field) {
+						if (empty($this->request->post['cpf'][$language['language_id']][$field['option_id']]) && $field['required']) {
+							$this->error['warning'] = 'Warning: Please ensure all required custom fields all filled up!';
+						}
+					}
+				}
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/language/english/catalog/product.php">
+		<operation>
+			<search position="before"><![CDATA[
+				?>
+			]]></search>
+			<add><![CDATA[
+				$_['tab_cpf'] = 'Custom Fields';
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/model/catalog/product.php">
+		<operation>
+			<search position="before"><![CDATA[
+				if (isset($data['product_store'])) {
+			]]></search>
+			<add><![CDATA[
+				if (isset($data['cpf'])) {			
+					foreach ($data['cpf'] as $language_id => $cpf) {
+						$cpf = serialize($cpf);
+						
+						$this->db->query("UPDATE " . DB_PREFIX . "product_description SET cpf = '" . $this->db->escape($cpf) . "' WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$language_id . "'");
+					}
+				} else {
+					$this->db->query("UPDATE " . DB_PREFIX . "product_description SET cpf = '' WHERE product_id = '" . (int)$product_id . "'");
+				}
+			]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+				'meta_keyword'     => $result['meta_keyword'],
+			]]></search>
+			<add><![CDATA[
+				'cpf'     => $result['cpf'],
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/catalog/product_form.tpl">
+		<operation>
+			<search position="replace"><![CDATA[
+				<a href="#tab-data"><?php echo $tab_data; ?></a>
+			]]></search>
+			<add><![CDATA[
+				<a href="#tab-data"><?php echo $tab_data; ?></a><a href="#tab-cpf"><?php echo $tab_cpf; ?></a>
+			]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				 <div id="tab-data">
+			]]></search>
+			<add><![CDATA[
+				<div id="tab-cpf">
+				  <div id="cpf-languages" class="htabs">
+					<?php foreach ($languages as $language) { ?>
+					<a href="#cpf-language<?php echo $language['language_id']; ?>"><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /> <?php echo $language['name']; ?></a>
+					<?php } ?>
+				  </div>
+				  <?php foreach ($languages as $language) { ?>
+				  <div id="cpf-language<?php echo $language['language_id']; ?>">
+				  <table class="form">
+					<?php foreach ($fields as $field) { ?>
+					  <?php if (($language['language_id'] == $field['language_id']) && $field['status']) { ?>
+					  <tr>
+						<td><?php if($field['required']) { ?><span class="required">*</span> <?php } ?><?php echo $field['name']; ?></td>
+						<td>
+						  <?php if ($field['type'] == 'date' && $field['status']) { ?>
+							<input type="text" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" value="<?php echo $field['value']; ?>" class="date" />
+						  <?php } elseif ($field['type'] == 'file' && $field['status']) { ?>
+							<a id="button-cpf-<?php echo $field['language_id']; ?>-<?php echo $field['option_id']; ?>" class="button">Upload</a>
+							<input type="hidden" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" value="<?php echo $field['value']; ?>" />
+						  <?php } elseif ($field['type'] == 'text' && $field['status']) { ?>
+							<input type="text" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" value="<?php echo $field['value']; ?>" />
+						  <?php } elseif ($field['type'] == 'textarea' && $field['status']) { ?>
+							<textarea rows="7" columns="100" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]"><?php echo $field['value']; ?></textarea>
+						  <?php } elseif ($field['type'] == 'datetime' && $field['status']) { ?>
+							<input type="text" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" class="datetime" value="<?php echo $field['value']; ?>" />
+						  <?php } elseif ($field['type'] == 'select' && $field['status']) { ?>
+							<select name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]">
+							  <option value=""><?php echo $text_select; ?></option>
+							  <?php foreach ($field['values'] as $value) { ?>
+								<?php if ($value['selected'] == $value['option_value_id']) { ?>
+								<option value="<?php echo $value['option_value_id']; ?>" selected="selected"><?php echo $value['name']; ?></option>
+								<?php } else { ?>
+								<option value="<?php echo $value['option_value_id']; ?>"><?php echo $value['name']; ?></option>
+								<?php } ?>
+							  <?php } ?>
+							</select>
+						  <?php } elseif ($field['type'] == 'radio' && $field['status']) { ?>
+							<?php foreach ($field['values'] as $value) { ?>
+							  <?php if ($value['selected'] == $value['option_value_id']) { ?>
+							  <input type="radio" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" value="<?php echo $value['option_value_id']; ?>" id="label-<?php echo $value['option_value_id']; ?>" checked /><label for="label-<?php echo $value['option_value_id']; ?>"><?php echo $value['name']; ?></label><br />
+							  <?php } else { ?>
+							  <input type="radio" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>]" value="<?php echo $value['option_value_id']; ?>" id="label-<?php echo $value['option_value_id']; ?>" /><label for="label-<?php echo $value['option_value_id']; ?>"><?php echo $value['name']; ?></label><br />
+							  <?php } ?>
+							<?php } ?>
+						  <?php } elseif ($field['type'] == 'checkbox' && $field['status']) { ?>
+							<?php foreach ($field['values'] as $value) { ?>
+							  <?php if ($value['selected'] == $value['option_value_id']) { ?>
+							  <input type="checkbox" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>][]" value="<?php echo $value['option_value_id']; ?>" id="label-<?php echo $value['option_value_id']; ?>" checked /><label for="label-<?php echo $value['option_value_id']; ?>"><?php echo $value['name']; ?></label><br />
+							  <?php } else { ?>
+							  <input type="checkbox" name="cpf[<?php echo $field['language_id']; ?>][<?php echo $field['option_id']; ?>][]" value="<?php echo $value['option_value_id']; ?>" id="label-<?php echo $value['option_value_id']; ?>" /><label for="label-<?php echo $value['option_value_id']; ?>"><?php echo $value['name']; ?></label><br />
+							  <?php } ?>
+							<?php } ?>
+						  <?php } ?>
+						</td>
+					  </tr>
+					  <?php } ?>
+					<?php } ?>
+				  </table>
+				  </div>
+				  <?php } ?>
+				</div>
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search position="before" index="1"><![CDATA[
+				<script type="text/javascript"><!--
+			]]></search>
+			<add><![CDATA[
+				<script type="text/javascript" src="view/javascript/jquery/ajaxupload.js"></script>
+				<script type="text/javascript"><!--
+					$('#cpf-languages a').tabs(); 
+				//--></script> 
+				<?php foreach ($languages as $language) { ?>
+					<?php foreach ($fields as $field) { ?>
+					  <?php if ($field['type'] == 'file' && $field['status']) { ?>
+						<script type="text/javascript"><!--
+							new AjaxUpload('#button-cpf-<?php echo $language['language_id']; ?>-<?php echo $field['option_id']; ?>', {
+								action: 'index.php?route=module/cpf/upload&token=<?php echo $token; ?>',
+								name: 'file',
+								autoSubmit: true,
+								responseType: 'json',
+								onSubmit: function(file, extension) {
+									$('#button-cpf-<?php echo $language['language_id']; ?>-<?php echo $field['option_id']; ?>').after('<img src="view/image/loading.gif" class="loading" style="padding-left: 5px;" />');
+									$('#button-cpf-<?php echo $language['language_id']; ?>-<?php echo $field['option_id']; ?>').attr('disabled', true);
+								},
+								onComplete: function(file, json) {
+									$('#button-cpf-<?php echo $language['language_id']; ?>-<?php echo $field['option_id']; ?>').attr('disabled', false);
+									
+									if (json['success']) {
+										alert(json['success']);
+										
+										$('input[name=\'cpf[<?php echo $language['language_id']; ?>][<?php echo $field['option_id']; ?>]\']').attr('value', json['file']);
+									}
+									
+									if (json['error']) {
+										alert(json['error']);
+									}
+									
+									$('.loading').remove();	
+								}
+							});
+						//--></script>
+					  <?php } ?>
+					<?php } ?>
+				<?php } ?>
+			]]></add>
+		</operation>
+	</file>
+<!--CATALOG-->
+	<file name="catalog/controller/product/product.php">
+		<operation>
+			<search position="before"><![CDATA[
+				if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/product.tpl')) {
+			]]></search>
+			<add><![CDATA[
+				$this->data['text_download'] = $this->language->get('text_download');
+				
+				if ($this->config->get('cpf_fields')) {
+					$fields = $this->config->get('cpf_fields');
+				} else {
+					$fields = array();
+				}
+				
+				$field_data = array();
+				
+				if (!empty($product_info['cpf'])) {
+					$cpf = unserialize($product_info['cpf']);
+				} else {
+					$cpf = array();
+				}
+				
+				$this->load->model('catalog/option');
+			
+				foreach ($fields as $field) {
+					$option = $this->model_catalog_option->getOption($field['option_id']);
+					
+					if ($option) {
+						if ($option['type'] == 'select' || $option['type'] == 'radio') {
+							$values = array();
+							
+							$option_values = $this->model_catalog_option->getOptionValues($field['option_id']);
+							
+							foreach ($option_values as $option_value) {
+								$selected = (!empty($cpf[$field['option_id']])) ? $cpf[$field['option_id']] : 0;
+								
+								$values[] = array(
+									'option_value_id'		=> $option_value['option_value_id'],
+									'name'					=> $option_value['name'],
+									'selected'				=> $selected
+								);
+							}
+							
+							$field_data[] = array(
+								'name' 			=> $option['name'],
+								'type' 			=> $option['type'],
+								'status'		=> $field['status'],
+								'sort_order'	=> $field['sort_order'],
+								'values'		=> $values
+							);
+						} elseif ($option['type'] == 'checkbox') {
+							$values = array();
+							
+							$option_values = $this->model_catalog_option->getOptionValues($field['option_id']);
+							
+							foreach ($option_values as $option_value) {
+								$selected = (!empty($cpf[$field['option_id']]) && is_array($cpf[$field['option_id']]) && in_array($option_value['option_value_id'], $cpf[$field['option_id']])) ? $option_value['option_value_id'] : 0;
+								
+								$values[] = array(
+									'option_value_id'		=> $option_value['option_value_id'],
+									'name'					=> $option_value['name'],
+									'selected'				=> $selected
+								);
+							}
+							
+							$field_data[] = array(
+								'name' 			=> $option['name'],
+								'type' 			=> $option['type'],
+								'status'		=> $field['status'],
+								'sort_order'	=> $field['sort_order'],
+								'values'		=> $values
+							);
+						} else {
+							$value = (!empty($cpf[$field['option_id']])) ? $cpf[$field['option_id']] : '';;
+
+							$field_data[] = array(
+								'name' 			=> $option['name'],
+								'type' 			=> $option['type'],
+								'status'		=> $field['status'],
+								'sort_order'	=> $field['sort_order'],
+								'value'			=> $value
+							);
+						}
+					}
+				}
+				
+				$sort_order = array(); 
+				
+				foreach ($field_data as $key => $value) {
+					$sort_order[$key] = $value['sort_order'];
+				}
+				
+				array_multisort($sort_order, SORT_ASC, $field_data);
+				
+				$this->data['fields'] = array();
+				
+				foreach ($field_data as $field) {
+					$this->data['fields'][] = $field;
+				}
+			]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				function review() {
+			]]></search>
+			<add><![CDATA[
+				public function download() {
+					if (isset($this->request->get['file'])) {
+						$file = DIR_DOWNLOAD . $this->request->get['file'];
+						$mask = basename(substr($this->request->get['file'], 0, strrpos($this->request->get['file'], '.')));
+						
+						if (!headers_sent()) {
+							if (file_exists($file)) {
+								header('Content-Type: application/octet-stream');
+								header('Content-Description: File Transfer');
+								header('Content-Disposition: attachment; filename="' . ($mask ? $mask : basename($file)) . '"');
+								header('Content-Transfer-Encoding: binary');
+								header('Expires: 0');
+								header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+								header('Pragma: public');
+								header('Content-Length: ' . filesize($file));
+								
+								readfile($file, 'rb');
+								
+								exit;
+							} else {
+								exit('Error: Could not find file ' . $file . '!');
+							}
+						} else {
+							exit('Error: Headers already sent out!');
+						}
+					} else {
+						$this->redirect($this->url->link('product/product'));
+					}
+				}
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/language/*/product/product.php">
+		<operation>
+			<search position="before"><![CDATA[
+				?>
+			]]></search>
+			<add><![CDATA[
+				$_['text_download'] = 'Download File';
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/model/catalog/product.php">
+		<operation>
+			<search position="after"><![CDATA[
+				'product_id' => $query->row['product_id'],
+			]]></search>
+			<add><![CDATA[
+				'cpf'     => $query->row['cpf'],
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search position="after"><![CDATA[
+				<div class="product-info product_info_prod_details">
+			]]></search>
+			<add><![CDATA[
+                            <dl class="dl-horizontal">
+				<?php foreach ($fields as $field) { ?>
+				  <?php if ($field['status'] && (!empty($field['value']) || !empty($field['values']))) { ?>
+					  
+                                        <?php $selected = false; ?>
+					  <?php if ($field['type'] == 'select' || $field['type'] == 'radio') { ?>
+						<?php foreach ($field['values'] as $value) { ?>
+						  <?php if ($value['selected'] && !$selected) { ?>
+						    <?php $selected = true; ?>
+							<dt><?php echo $field['name']; ?></dt>
+						  <?php } ?>
+						  <?php if ($value['selected'] == $value['option_value_id']) { ?>
+							<dd><?php echo $value['name']; ?></dd>
+						  <?php } ?>
+						<?php } ?><?php if ($selected) { ?><?php } ?>
+					  <?php } elseif ($field['type'] == 'checkbox') { ?>
+						<?php $checkbox_value = ''; ?>
+						<?php foreach ($field['values'] as $value) { ?>
+						  <?php if ($value['selected'] && !$selected) { ?>
+						    <?php $selected = true; ?>
+							<dt><?php echo $field['name']; ?></dt>
+						  <?php } ?>
+						  <?php if ($value['selected'] == $value['option_value_id']) { ?>
+							<?php $checkbox_value .= $value['name'] . ', '; ?> 
+						  <?php } ?>
+						<?php } ?>
+						<dd><?php echo substr($checkbox_value, 0, -2); ?></dd><?php if ($selected) { ?><?php } ?>
+					  <?php } elseif ($field['type'] == 'file') { ?>
+						<dt><?php echo $field['name']; ?></dt> 
+						<dd><a href="index.php?route=product/product/download&file=<?php echo $field['value']; ?>"><?php echo $text_download; ?></a></dd>
+					  <?php } else { ?>
+						<dt><?php echo $field['name']; ?></dt> 
+						<dd><?php echo $field['value']; ?></dd>
+					  <?php } ?>
+				  <?php } ?>
+				<?php } ?>
+                            </dl>
+			]]></add>
+		</operation>
+	</file>
+</modification>
