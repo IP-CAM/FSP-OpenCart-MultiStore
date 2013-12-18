@@ -1,0 +1,17 @@
+#menu div a > span {padding-right: 20px;margin-right: 0px;display: block;}
+#menu .parent > a > span {/*background-image: url('../image/next.png');*/background-position: center right;background-repeat: no-repeat;background-attachment: float;opacity: 1;}
+.dchild {margin: -1.8em 0 0 100%; /*Firefox*/margin: -1.8em 0 0 90%9; /*IE*/}
+.dchild,.cdchild {display: none;position: absolute;z-index: 5;padding: 5px;visibility: inherit;border: 1px solid #000000; /*Submenu border*/border-radius: 0px 5px 5px 0px;background: url('../image/menu.png'); /*Submenu background (black-transparent)*/}
+#menu ul > li > div {padding: 0px;}
+/*#menu ul > li > div a {padding: 0px;margin: 0px;}*/
+#menu .parent:hover > div {display: table !important;}
+#menu .parent > div > ul {display: table-cell;}
+.cdchild {margin: -0.3em 0 0 1em;}
+/*#menu div > ul > li {margin-right: -20px;padding-right: 20px;}*/
+#menu .dchild ul > li > a {color: #FFFFFF;}
+#menu .l1 {background-color: #FFA07A !important;opacity: .8;}
+#menu .l2 {background-color: #DAA520;}
+#menu .l3 {background-color: #48D1CC;}
+#menu .l4 {ackground-color: #A9A9A9;}
+#menu .l5 {background-color: #8FBC8F;}
+#menu .l6 {background-color: #66CDAA;}

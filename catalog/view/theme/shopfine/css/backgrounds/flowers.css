@@ -1,0 +1,5 @@
+body {
+    background: url("../img/backgrounds/flowers.jpg") no-repeat fixed left top / 100% auto #FFFFFF;
+    *background: url("../img/backgrounds/flowers.jpg") no-repeat fixed left top;
+    background-size: 100%  ;
+}
