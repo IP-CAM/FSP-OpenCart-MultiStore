@@ -1,0 +1,20 @@
+<modification>
+    <id>OpenERP Settings</id>
+    <version>1.5.x</version>
+    <vqmver>2.X</vqmver>
+    <author>Sandeep</author>
+    <file name="catalog/controller/checkout/success.php">
+        <operation>
+            <search position="after"><![CDATA[
+                   $this->cart->clear();
+            ]]>
+            </search>
+            <add><![CDATA[
+                   $this->load->model('module/openerpsettings');
+                   $this->model_module_openerpsettings->importToErp();
+                
+            ]]>
+            </add>
+        </operation>
+    </file>
+</modification>

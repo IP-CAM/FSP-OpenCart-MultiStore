@@ -1,0 +1,59 @@
+<modification>
+    <id>2-Level Category Topmenu</id>
+    <version>3.2</version>
+    <vqmver>1.2.3</vqmver>
+    <author>Imm</author>
+    <file name="catalog/controller/common/header.php">
+        <operation error="log">
+            <search  position="after"><![CDATA[$children_data = array();]]>
+            </search>
+            <add><![CDATA[
+				///show product code1
+				$pdata = array('filter_category_id'  => $category['category_id']);
+				$results = $this->model_catalog_product->getProducts($pdata);
+				$products = array();
+				foreach($results as $result){
+					$products[] = array(
+						'name'        => $result['name'],
+						'href'        => $this->url->link('product/product', 'path=' . $category['category_id'] . '&product_id=' . $result['product_id'])
+					);
+				}
+				///show product code1
+			]]>
+            </add>
+        </operation>
+        <operation error="log">
+            <search position="replace"><![CDATA[$children_data[] = array(]]>
+            </search>
+            <add><![CDATA[
+					$children_data1 = array();
+					$children1 = $this->model_catalog_category->getCategories($child['category_id']);
+					foreach ($children1 as $child1) {
+						$data1 = array(
+							'filter_category_id'  => $child1['category_id'],
+							'filter_sub_category' => true
+						);
+						$product_total1 = $this->model_catalog_product->getTotalProducts($data1);
+
+					$children_data1[] = array(
+						'name'  => $child1['name'] . ($this->config->get('config_product_count') ? ' (' . $product_total1 . ')' : ''),
+						'href'  => $this->url->link('product/category', 'path=' . $category['category_id'] . '_' . $child['category_id'] . '_' . $child1['category_id'])
+					);
+					}
+					$children_data[] = array(
+						'children' => $children_data1, //
+					]]>
+            </add>
+        </operation>
+        <operation error="log">
+            <search  position="after"><![CDATA[$this->data['categories'][] = array(]]>
+            </search>
+            <add><![CDATA[
+					'prod' 		=> $products,///show product code1
+			]]>
+            </add>
+        </operation>
+    </file>
+	
+    
+</modification>    

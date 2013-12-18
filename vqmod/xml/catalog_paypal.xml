@@ -1,0 +1,27 @@
+<modification>
+    <id>Catalog Paypal Cust.</id>
+    <version>1.5.x</version>
+    <vqmver>1.0.8</vqmver>
+    <author>Tarsem</author>
+    <file name="catalog/controller/payment/pp_standard.php">
+        <operation>
+            <search position="before"><![CDATA[
+                curl_close($curl);
+            ]]></search>
+            <add><![CDATA[
+                $sql="update `order`  set payment_method='Paypal' where order_id=".$order_id;
+                $this->db->query($sql);]]></add>
+        </operation>
+    </file>
+        
+    <file name="catalog/model/payment/pp_standard.php">
+        <operation>
+            <search position="after"><![CDATA[
+                'title'      => $this->language->get('text_title'),
+            ]]></search>
+            <add><![CDATA[
+                'html' =>'<span class="paypal-img"></span>',
+            ]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,117 @@
+<modification>
+    <id>Admin Welcome</id>
+    <version>1.5.x</version>
+    <vqmver>1.0.0</vqmver>
+    <author>Hanish</author>
+    <file name="admin/view/template/module/welcome.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+                <div class="buttons">
+            ]]></search>
+            <add><![CDATA[
+                <div class="buttons">
+                        <select class="button" name="store_id" onchange="reload_page(this.value)">
+                            <option value="0">Default</option>
+                            <?php foreach($totalstores as $store){ ?>
+                            <option value="<?php echo $store['store_id']; ?>" <?php if($store['store_id'] == $store_id){ echo 'selected="selected"'; } ?> ><?php echo $store['name']; ?></option>
+                            <?php } ?>
+                        </select>
+                </div>
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+                <?php echo $footer; ?>
+            ]]></search>
+            <add><![CDATA[
+                <script type="text/javascript"><!--
+                    function reload_page(id){
+                            var url ='<?php echo html_entity_decode($welcome_link); ?>';
+                            location.href = url+'&store_id='+id;
+                    }
+                //--></script> 
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+                <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
+            ]]></search>
+            <add><![CDATA[
+                <input type="hidden" value="<?php echo $store_id; ?>" name="store_id" />
+            ]]></add>
+        </operation>
+        <!--   <operation>
+            <search position="after"><![CDATA[
+                html += '      <td><input type="text" name="welcome_module[' + module_row + '][sort_order]" value="" size="3" /></td>';
+            ]]></search>
+            <add><![CDATA[
+                html += '      </tr>';
+                html += '      <tr>';
+                    html += '      <td>Store Id</td>';
+                    html += '      <td>';
+                        html += '      <select name="welcome_module[' + module_row + '][store_id]">';
+                html += '      <option value="0">Default</option>';
+                            <?php foreach($totalstores as $store){ ?>
+                            html += '      <option value="<?php echo $store['store_id']; ?>"><?php echo $store['name']; ?></option>';
+                            <?php } ?>
+                        html += '      </select>';
+                    html += '      </td>';
+            ]]></add>
+        </operation> -->
+    </file>
+    <file name="admin/controller/module/welcome.php">
+        <operation>
+            <search position="after"><![CDATA[
+                $this->load->model('setting/setting');
+            ]]></search>
+            <add><![CDATA[
+                $this->load->model('custom/welcome');
+                if (isset($this->request->get['store_id'])) {
+                    $this->data['store_id'] = $this->request->get['store_id'];
+                }else{
+                    $this->data['store_id'] = 0;
+                }
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+                $this->data['breadcrumbs'] = array();
+            ]]></search>
+            <add><![CDATA[
+                $query = $this->db->query("select * FROM " . DB_PREFIX . "store order by name");
+                $this->data['totalstores'] = $query->rows;
+                $this->data['welcome_link'] = $this->url->link('module/welcome', 'token=' . $this->session->data['token'], 'SSL');
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[
+                $this->model_setting_setting->editSetting('welcome', $this->request->post);
+            ]]></search>
+            <add><![CDATA[
+                $store_id = $this->request->post['store_id'];
+                unset($this->request->post['store_id']);
+                $this->model_setting_setting->editSetting('welcome', $this->request->post,$store_id);
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[
+                } elseif ($this->config->get('welcome_module')) {
+            ]]></search>
+            <add><![CDATA[
+                } else {
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="replace"><![CDATA[
+                $this->data['modules'] = $this->config->get('welcome_module');
+            ]]></search>
+            <add><![CDATA[
+                $module_data = $this->model_custom_welcome->getSetting('welcome',$this->data['store_id']);
+                if(!empty($module_data)){
+                    $this->data['modules'] = $module_data['welcome_module'];
+                }
+                
+            ]]></add>
+        </operation>
+    </file>
+</modification>

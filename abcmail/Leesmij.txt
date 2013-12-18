@@ -1,0 +1,3 @@
+Om dit voorbeeld te laten werken is pear.php nodig (te vinden op Internet)
+
+PB

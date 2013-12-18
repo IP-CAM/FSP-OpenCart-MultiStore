@@ -1,0 +1,83 @@
+<modification>
+    <id>Admin Invoice</id>
+    <version>1.5.x</version>
+    <vqmver>1.0.8</vqmver>
+    <author>Tarsem</author>
+    
+    <file name="admin/view/template/sale/order_invoice.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+                <td><b><?php echo $column_product; ?></b></td>
+            ]]></search>
+            <add><![CDATA[
+                <td><b>SKU</b></td>
+            ]]></add>
+        </operation>                
+        <operation>
+            <search position="before"><![CDATA[
+                <td><?php echo $product['name']; ?>
+            ]]></search>
+            <add><![CDATA[
+                <td><?php echo $product['sku']; ?></td>
+            ]]></add>
+        </operation>                
+        <operation>
+            <search position="replace"><![CDATA[
+                <td align="right" colspan="4"><b><?php echo $total['title']; ?>:</b></td>
+            ]]></search>
+            <add><![CDATA[
+                <td align="right" colspan="5"><b><?php echo $total['title']; ?>:</b></td>
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+               <link rel="stylesheet" type="text/css" href="view/stylesheet/invoice.css" />
+            ]]></search>
+            <add><![CDATA[
+               <script type="text/javascript" src="view/javascript/jquery/jquery-1.7.1.min.js"></script>
+                ]]></add>
+        </operation> 
+        <operation>
+            <search position="after"><![CDATA[
+                <div style="page-break-after: always;">
+            ]]></search>
+            <add><![CDATA[
+                <div style="page-break-after: always; " id="invoice">
+            ]]></add>
+        </operation> 
+        <operation>
+            <search position="after"><![CDATA[
+                </html>
+            ]]></search>
+            <add><![CDATA[
+                ?>
+                <script language="javascript" type="text/javascript">
+                    window.print();
+                </script>
+                <?php 
+        ]]></add>
+        </operation>
+    </file>
+        
+    <file name="admin/controller/sale/order.php">
+        <operation>
+            <search position="before"><![CDATA[
+                $product_data[] = array(
+            ]]></search>
+            <add><![CDATA[
+                $sql = "select sku from product where product_id=".$product['product_id'];
+                $result_sku=$this->db->query($sql);
+                $sku =$result_sku->row;
+                $product_sku=$sku['sku'];
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="after"><![CDATA[
+                'name'     => $product['name'],
+            ]]></search>
+            <add><![CDATA[
+                'sku'     =>$product_sku,
+            ]]></add>
+        </operation>
+    </file>    
+</modification>

@@ -1,0 +1,71 @@
+<modification>
+    <id>Mail Subject Language Mail order</id>
+    <version>1.5.x</version>
+    <vqmver>2.X</vqmver>
+    <author>Hanish Singla</author>
+    <file name="catalog/language/english/mail/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+                    $_['text_new_subject']          = '%s - Order %s';
+            ]]>
+            </search>
+            <add><![CDATA[
+                    $_['text_new_subject']          = 'Order Confirmation';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/language/dutch/mail/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+                    $_['text_new_subject']          = '%s - Bestelnummer %s';
+            ]]>
+            </search>
+            <add><![CDATA[
+                    $_['text_new_subject']          = 'Orderbevestiging';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/language/french/mail/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+                    $_['text_new_subject']			= '%s - Commande %s';
+            ]]>
+            </search>
+            <add><![CDATA[
+                    $_['text_new_subject']          = 'Confirmation de Commande';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/language/de_DE/mail/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+                    $_['text_new_subject']          = '%s - Bestellung Nr. %s';
+            ]]>
+            </search>
+            <add><![CDATA[
+                    $_['text_new_subject']          = 'Auftragsbest&auml;tigung';
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <file name="catalog/model/checkout/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+                   $mail->setTo($order_info['email']);
+            ]]>
+            </search>
+            <add><![CDATA[
+                   $mail->setTo(array($order_info['email'],$this->config->get('config_email')));
+            ]]>
+            </add>
+        </operation>
+    </file>
+    
+    
+    
+    
+    
+</modification>

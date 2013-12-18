@@ -1,0 +1,85 @@
+<modification>
+    <id>Delivery Status Update</id>
+    <version>1.5.x</version>
+    <vqmver>2.X</vqmver>
+    <author>Tarsem</author>
+    <file name="admin/view/template/sale/order_form.tpl">
+        <operation>
+            <search position="before"><![CDATA[
+             <td class="left"><?php echo $entry_comment; ?></td>
+            ]]></search>
+            <add><![CDATA[
+            <tr>
+                <td class="left">Delivery Status:</td>
+                <td class="left">
+                    <?php $delvery_status_arr = array(
+                                    "NULL" => "Select",
+                                    "IC Hub arrival" => "IC Hub arrival",
+                                    "IC Hub sortation" => "IC Hub sortation",
+                                    "Ready to Ship" => "Ready to Ship",
+                                    "Shipped" => "Shipped",
+                                    "In Transit" => "In Transit",
+                                    "At Post Office" => "At Post Office",
+                                    "Claim Settled" => "Claim Settled",
+                                    "Customer Research" => "Customer Research",
+                                    "To be Compensated" => "To be Compensated",
+                                    "Compensated" => "Compensated",
+                                    "Problem Solved" => "Problem Solved",
+                                    "Returned at ABCMail" => "Returned at ABCMail",
+                                    "Returned & Reported" => "Returned & Reported",
+                                    "Returned to Customer" => "Returned to Customer",
+                                    "Undeliverable" => "Undeliverable",
+                                    "Unknown" => "Unknown",
+                                    "Forwarded" => "Forwarded",
+                                    "Delivered" => "Delivered"
+                                );
+                    ?>
+                    <select name="delivery_status">
+                <?php foreach($delvery_status_arr as $key => $delvery_status){ ?>
+                    <?php if ($delivery_status == $delvery_status) { ?>
+                            <option value="<?php echo $key; ?>" selected="selected" ><?php echo $delvery_status; ?></option>
+                    <?php }else{ ?>
+                            <option value="<?php echo $key; ?>"><?php echo $delvery_status; ?></option>
+                    <?php } ?>
+                <?php } ?>
+                    </select>
+                </td>
+            </tr>              
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/controller/sale/order.php">
+        <operation>
+            <search position="before"><![CDATA[
+             $this->load->model('localisation/order_status');
+            ]]></search>
+            <add><![CDATA[
+                if (isset($this->request->post['delivery_status'])) {
+                    $this->data['delivery_status'] = $this->request->post['delivery_status'];
+                } elseif (!empty($order_info)) {
+                    $this->data['delivery_status'] = $order_info['delivery_status'];
+		} else {
+                    $this->data['delivery_status'] = '';
+                }           
+            ]]></add>
+        </operation>
+    </file>
+    <file name="admin/model/sale/order.php">
+        <operation>
+            <search position="after"><![CDATA[
+             'order_id'                => $order_query->row['order_id'],
+            ]]></search>
+            <add><![CDATA[
+                'delivery_status'                => $order_query->row['delivery_status'],       
+            ]]></add>
+        </operation>
+        <operation>
+            <search position="before"><![CDATA[
+             if (isset($data['order_total'])) {
+            ]]></search>
+            <add><![CDATA[
+                $this->db->query("UPDATE `" . DB_PREFIX . "order` SET delivery_status = '" . $data['delivery_status'] . "' WHERE order_id = '" . (int)$order_id . "'");
+            ]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,18 @@
+<modification>
+    <id>Print Order Invoice</id>
+    <version>1.5.x</version>
+    <vqmver>1.0.0</vqmver>
+    <author>Hanish</author>
+    <file name="admin/view/template/sale/order_invoice.tpl">
+        <operation>
+            <search position="after"><![CDATA[
+                </html>
+            ]]></search>
+            <add><![CDATA[
+                <script type="text/javascript">
+                        window.print();
+                </script>
+                ]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!-- was: no XML declaration present -->
+<modification>
+    <id>Category Menu Data</id>
+    <version>1.0.0</version>
+    <vqmver>2.2.1</vqmver>
+    <author>Hanish Singla</author>
+    <decription><![CDATA[
+		/*
+			This file is for "Extra Category Information Data" for Menu.It adds a Category named "All" in each category that is in Menu.This all category contaions
+                        All of the products of parent category.
+
+
+			---------------------------------------------------------------------
+			Name:		Extra Product Tabs Opencart Extension
+			
+			Version: 1.0.0
+
+			OpenCart:	Version 1.5.4.1, 1.5.5.1
+
+			Author: 	Hanish Singla
+
+			Copyright 2012, 2013
+
+		*/
+		]]>
+    </decription>
+
+    <file name="catalog/controller/common/header.php" error="log">
+        
+        <operation error="log">
+            <search position="after"><![CDATA[
+				$children = $this->model_catalog_category->getCategories($category['category_id']);
+				]]>
+            </search>
+            <add trim="true"><![CDATA[
+                $this->data['fstCatKey'] = '';
+                 if (isset($this->request->get['path'])) {
+                     $catPath = $this->request->get['path'];
+                     $catPathArr = explode("_", $catPath);
+                     if (count($catPathArr) > 1) {
+                         $this->data['fstCatKey'] = $catPathArr[1];
+                     } else {
+                         $this->data['fstCatKey'] = $catPathArr[0];
+                     }
+                 }
+                 $data = array(
+                     'filter_category_id' => $category['category_id'],
+                     'filter_sub_category' => true
+                 );
+
+                 $product_total = $this->model_catalog_product->getTotalProducts($data);
+                 if (count($children) > 0) {
+                     $children_data[0] = array(
+                         'children' => array(),
+                         'name' => 'All' . ($this->config->get('config_product_count') ? ' (' . $product_total . ')' : ''),
+                         'href' => $this->url->link('product/category', 'path=' . $category['category_id'].'&p=all'),
+                         'id' => $category['category_id'],
+                         'top' => $category['top']
+                     );
+                 }
+				]]>
+            </add>
+        </operation>
+       
+    </file>
+    
+</modification>
